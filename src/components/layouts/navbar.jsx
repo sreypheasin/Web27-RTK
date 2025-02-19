@@ -1,11 +1,19 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router";
 import { FaCartArrowDown } from "react-icons/fa6";
+import {
+  fetchUser,
+  selectToken,
+  selectUser
+} from "../../features/auth/authSlice";
 
 export default function Navbar() {
   const totalQty = useSelector((state) => state.cartR.totalQty);
   const countValue = useSelector((state) => state.counterR.countValue);
+  const user = useSelector(selectUser);
+  const token = useSelector(selectToken);
+  const dispatch = useDispatch();
   console.log(countValue);
   const menu = [
     {
@@ -21,6 +29,9 @@ export default function Navbar() {
       title: `${countValue}`
     }
   ];
+  useEffect(() => {
+    dispatch(fetchUser(token));
+  }, []);
   return (
     <nav className="mb-5 bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -82,11 +93,20 @@ export default function Navbar() {
                 {totalQty}
               </span>
             </li>
+            {token && (
+              <li>
+                <img
+                  class="w-10 h-10 rounded-full"
+                  src={user.image}
+                  alt="Rounded avatar"
+                />
+              </li>
+            )}
             <NavLink
               to="/login"
               className="bg-blue-700 text-white py-2 px-5 hover:bg-blue-800 rounded-md"
             >
-              Login
+              {token ? "Log out" : "Login"}
             </NavLink>
           </ul>
         </div>

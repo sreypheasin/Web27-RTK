@@ -1,8 +1,15 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { ToastContainer, toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLogin, selectToken } from "../../features/auth/authSlice";
+import { useNavigate } from "react-router";
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const navigate = useNavigate();
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),
     password: Yup.string()
@@ -17,7 +24,12 @@ export default function Login() {
           password: ""
         }}
         validationSchema={validationSchema}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values, { resetForm }) => (
+          await dispatch(fetchLogin(values)),
+          resetForm(),
+          token && (toast.success("Login success"), navigate("/")),
+          !token && toast.error("Invalided credential")
+        )}
       >
         {/* Form */}
         {({ isSubmitting }) => (
@@ -31,7 +43,7 @@ export default function Login() {
                 htmlFor="username"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Enter username
+                Enter Username
               </label>
               <Field
                 type="text"
@@ -74,6 +86,7 @@ export default function Login() {
           </Form>
         )}
       </Formik>
+      <ToastContainer />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
 } from "./features/product/productSlice";
 import ProductCard from "./components/cards/product-card";
 import ProductSkeleton from "./components/skeleton/product-skeleton";
+import { selectUser } from "./features/auth/authSlice";
 
 function App() {
   const products = useSelector(selectAllProducts);
