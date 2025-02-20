@@ -2,13 +2,12 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchLogin, selectToken } from "../../features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import { fetchLogin} from "../../features/auth/authSlice";
 import { useNavigate } from "react-router";
 
 export default function Login() {
   const dispatch = useDispatch();
-  const token = useSelector(selectToken);
   const navigate = useNavigate();
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),

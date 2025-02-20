@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { addToken, getToken, removeToken } from "../secure-storage";
 
 // LOGIN
 export const fetchLogin = createAsyncThunk(
@@ -48,7 +49,8 @@ const authSlice = createSlice({
       .addCase(fetchLogin.fulfilled, (state, action) => {
         console.log("login action", action);
         state.status = "Success";
-        state.token = action.payload.accessToken;
+        addToken(action.payload.accessToken);
+        // state.token = getToken();
       })
       .addCase(fetchLogin.rejected, (state, action) => {
         state.status = "Failed";
@@ -71,5 +73,5 @@ const authSlice = createSlice({
 // export reducer
 export default authSlice.reducer;
 
-export const selectToken = (state) => state.authR.token;
+// export const selectToken = (state) => state.authR.token;
 export const selectUser = (state) => state.authR.user;

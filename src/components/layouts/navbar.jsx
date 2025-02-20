@@ -2,19 +2,21 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router";
 import { FaCartArrowDown } from "react-icons/fa6";
-import {
-  fetchUser,
-  selectToken,
-  selectUser
-} from "../../features/auth/authSlice";
+import { fetchUser, selectUser } from "../../features/auth/authSlice";
+import { getToken, removeToken } from "../../features/secure-storage";
+import { Button, Modal } from "flowbite-react";
+import { useState } from "react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function Navbar() {
+  const [openModal, setOpenModal] = useState(false);
   const totalQty = useSelector((state) => state.cartR.totalQty);
   const countValue = useSelector((state) => state.counterR.countValue);
   const user = useSelector(selectUser);
-  const token = useSelector(selectToken);
+  // const token = useSelector(selectToken);
+  const token = getToken();
+  console.log("token in navbar", token);
   const dispatch = useDispatch();
-  console.log(countValue);
   const menu = [
     {
       path: "/",
@@ -23,15 +25,17 @@ export default function Navbar() {
     {
       path: "/products",
       title: "Product"
-    },
-    {
-      path: "#",
-      title: `${countValue}`
     }
   ];
   useEffect(() => {
     dispatch(fetchUser(token));
+    console.log("get user data");
   }, []);
+  // handle logout
+  const handleLogOut = () => {
+    removeToken();
+    setOpenModal(false);
+  };
   return (
     <nav className="mb-5 bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -102,12 +106,46 @@ export default function Navbar() {
                 />
               </li>
             )}
-            <NavLink
-              to="/login"
-              className="bg-blue-700 text-white py-2 px-5 hover:bg-blue-800 rounded-md"
-            >
-              {token ? "Log out" : "Login"}
-            </NavLink>
+            {!token ? (
+              <NavLink to={"/login"}>
+                <button className="bg-blue-700 text-white py-2 px-5 hover:bg-blue-800 rounded-md">
+                  Login
+                </button>
+              </NavLink>
+            ) : (
+              <>
+                <Button color="blue" onClick={() => setOpenModal(true)}>
+                  Log out
+                </Button>
+                <Modal
+                  show={openModal}
+                  size="md"
+                  onClose={() => setOpenModal(false)}
+                  popup
+                >
+                  <Modal.Header />
+                  <Modal.Body>
+                    <div className="text-center">
+                      <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+                      <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                        Are you sure you want to log out?
+                      </h3>
+                      <div className="flex justify-center gap-4">
+                        <Button color="failure" onClick={() => handleLogOut()}>
+                          {"Yes, I'm sure"}
+                        </Button>
+                        <Button
+                          color="gray"
+                          onClick={() => setOpenModal(false)}
+                        >
+                          No, cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+              </>
+            )}
           </ul>
         </div>
       </div>
