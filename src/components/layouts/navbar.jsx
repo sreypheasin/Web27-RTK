@@ -96,7 +96,7 @@ export default function Navbar() {
             {token && (
               <li>
                 <img
-                  class="w-10 h-10 rounded-full"
+                  className="w-10 h-10 rounded-full"
                   src={user.image}
                   alt="Rounded avatar"
                 />

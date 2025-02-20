@@ -24,12 +24,22 @@ export default function Login() {
           password: ""
         }}
         validationSchema={validationSchema}
-        onSubmit={async (values, { resetForm }) => (
-          await dispatch(fetchLogin(values)),
-          resetForm(),
-          token && (toast.success("Login success"), navigate("/")),
-          !token && toast.error("Invalided credential")
-        )}
+        onSubmit={async (values, { resetForm }) => {
+          try {
+            const result = await dispatch(fetchLogin(values));
+
+            if (result?.payload?.accessToken) {
+              toast.success("Login success");
+              navigate("/");
+            } else {
+              toast.error("Invalid credentials");
+            }
+          } catch (error) {
+            toast.error("An error occurred during login.");
+          } finally {
+            resetForm(); // Only reset after the request is done
+          }
+        }}
       >
         {/* Form */}
         {({ isSubmitting }) => (
